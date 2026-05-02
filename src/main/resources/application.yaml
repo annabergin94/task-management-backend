@@ -36,3 +36,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    defer-datasource-initialization: true # run sql
+  sql:
+    init:
+      data-locations: classpath:taskData.sql
