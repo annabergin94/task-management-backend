@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.dev.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.dev.dtos.CreatorTask;
-import uk.gov.hmcts.reform.dev.dtos.TaskStatusUpdate;
-import uk.gov.hmcts.reform.dev.models.Task;
+import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
+import uk.gov.hmcts.reform.dev.dtos.TaskResponseDTO;
+import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
 import uk.gov.hmcts.reform.dev.services.TaskManagementService;
 
 import java.util.List;
@@ -26,32 +28,36 @@ public class TaskManagementController {
 
     @Operation(summary = "Get a task by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-        return ResponseEntity.ok(taskManagementService.getTaskById(id));
+    public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable Long id) {
+        return ResponseEntity.ok(TaskResponseDTO.from(taskManagementService.getTaskById(id)));
     }
 
     @Operation(summary = "Get all tasks")
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
-        return ResponseEntity.ok(taskManagementService.getAllTasks());
+    public ResponseEntity<List<TaskResponseDTO>> getAllTasks() {
+        return ResponseEntity.ok(taskManagementService.getAllTasks().stream()
+                                     .map(TaskResponseDTO::from)
+                                     .toList()
+        );
     }
 
     @Operation(summary = "Update the status of a given task")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Task> updateTaskStatus(@PathVariable Long id, @RequestBody TaskStatusUpdate taskStatusUpdate) {
-        return ResponseEntity.ok(taskManagementService.updateTaskStatus(id, taskStatusUpdate));
+    public ResponseEntity<TaskResponseDTO> updateTaskStatus(@PathVariable Long id, @Valid @RequestBody UpdatedTaskStatusRequestDTO taskStatusUpdate) {
+        return ResponseEntity.ok(TaskResponseDTO.from(taskManagementService.updateTaskStatus(id, taskStatusUpdate)));
     }
 
     @Operation(summary = "Delete a task")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskManagementService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Create a new task")
-    @PostMapping("/create")
-    public ResponseEntity<Task> createTask(@RequestBody CreatorTask task) {
-        return ResponseEntity.ok(taskManagementService.createTask(task));
+    @PostMapping
+    public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody CreateTaskRequestDTO task) {
+        TaskResponseDTO created = TaskResponseDTO.from(taskManagementService.createTask(task));
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

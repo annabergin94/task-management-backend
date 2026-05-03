@@ -4,6 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.dev.models.Task;
 
+/**
+ * Data access layer for Task entity
+ * Extends JpaRepository for CRUD operations
+ */
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 }

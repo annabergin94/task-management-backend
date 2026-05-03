@@ -6,8 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.dev.dtos.CreatorTask;
-import uk.gov.hmcts.reform.dev.dtos.TaskStatusUpdate;
+import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
+import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
 import uk.gov.hmcts.reform.dev.enums.TaskStatus;
 import uk.gov.hmcts.reform.dev.exceptions.TaskNotFoundException;
 import uk.gov.hmcts.reform.dev.models.Task;
@@ -20,9 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskManagementServiceTest {
@@ -40,7 +38,6 @@ class TaskManagementServiceTest {
     @BeforeEach
     void setUp() {
         task = new Task();
-        task.setId(1L);
         task.setTitle("Test Task");
         task.setDescription("Test Description");
         task.setStatus(TaskStatus.PENDING);
@@ -84,7 +81,7 @@ class TaskManagementServiceTest {
 
     @Test
     void updateTaskStatus() {
-        TaskStatusUpdate statusUpdate = new TaskStatusUpdate(TaskStatus.COMPLETED);
+        UpdatedTaskStatusRequestDTO statusUpdate = new UpdatedTaskStatusRequestDTO(TaskStatus.COMPLETED);
         when(taskRepository.findById(MOCK_ID)).thenReturn(Optional.of(task));
         when(taskRepository.save(task)).thenReturn(task);
         Task result = taskManagementService.updateTaskStatus(MOCK_ID, statusUpdate);
@@ -95,7 +92,7 @@ class TaskManagementServiceTest {
 
     @Test
     void updateTaskStatusThrowsTaskNotFoundException() {
-        TaskStatusUpdate statusUpdate = new TaskStatusUpdate(TaskStatus.COMPLETED);
+        UpdatedTaskStatusRequestDTO statusUpdate = new UpdatedTaskStatusRequestDTO(TaskStatus.COMPLETED);
         when(taskRepository.findById(MOCK_ID)).thenReturn(Optional.empty());
         assertThrows(TaskNotFoundException.class, () -> taskManagementService.updateTaskStatus(MOCK_ID, statusUpdate));
         verify(taskRepository).findById(MOCK_ID);
@@ -119,7 +116,12 @@ class TaskManagementServiceTest {
 
     @Test
     void createTask() {
-        CreatorTask creatorTask = new CreatorTask("Test Task", "Test Description", TaskStatus.PENDING, task.getDueDate());
+        CreateTaskRequestDTO creatorTask = new CreateTaskRequestDTO(
+            "Test Task",
+            "Test Description",
+            TaskStatus.PENDING,
+            task.getDueDate()
+        );
         when(taskRepository.save(any(Task.class))).thenReturn(task);
         Task result = taskManagementService.createTask(creatorTask);
         assertEquals(task.getId(), result.getId());
