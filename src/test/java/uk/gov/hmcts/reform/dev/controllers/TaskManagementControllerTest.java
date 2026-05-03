@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
 import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
 import uk.gov.hmcts.reform.dev.enums.TaskStatus;
 import uk.gov.hmcts.reform.dev.models.Task;
@@ -97,7 +98,8 @@ class TaskManagementControllerTest {
 
         mockMvc.perform(post("/tasks")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(new UpdatedTaskStatusRequestDTO(TaskStatus.COMPLETED))))
+                            .content(objectMapper.writeValueAsString(
+                                new CreateTaskRequestDTO("New Task", "Desc", TaskStatus.PENDING, LocalDateTime.now()))))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.title").value("Test Task"));
 
