@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.dev.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.dev.dtos.CreatorTask;
-import uk.gov.hmcts.reform.dev.dtos.TaskStatusUpdate;
+import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
+import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
 import uk.gov.hmcts.reform.dev.exceptions.TaskNotFoundException;
 import uk.gov.hmcts.reform.dev.models.Task;
 import uk.gov.hmcts.reform.dev.repositories.TaskRepository;
@@ -24,24 +25,26 @@ public class TaskManagementService {
         return taskRepository.findAll();
     }
 
-    public Task updateTaskStatus(Long id, TaskStatusUpdate statusUpdate) {
+    @Transactional
+    public Task updateTaskStatus(Long id, UpdatedTaskStatusRequestDTO statusUpdate) {
         Task task = getTaskById(id);
         task.setStatus(statusUpdate.status());
         return taskRepository.save(task);
     }
 
+    @Transactional
     public void deleteTask(Long id) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
-        taskRepository.delete(task);
+        taskRepository.delete(getTaskById(id));
     }
 
-    public Task createTask(CreatorTask taskRequest) {
-        Task task = new Task();
-        task.setTitle(taskRequest.title());
-        task.setDescription(taskRequest.description());
-        task.setStatus(taskRequest.status());
-        task.setDueDate(taskRequest.dueDate());
-        return taskRepository.save(task);
+    @Transactional
+    public Task createTask(CreateTaskRequestDTO taskRequest) {
+        return taskRepository.save(new Task(
+            taskRequest.title(),
+            taskRequest.description(),
+            taskRequest.status(),
+            taskRequest.dueDate()
+        ));
     }
 
 }
