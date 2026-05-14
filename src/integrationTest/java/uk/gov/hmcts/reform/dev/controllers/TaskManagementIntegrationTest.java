@@ -5,7 +5,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.dev.exceptions.TaskNotFoundException;
-import uk.gov.hmcts.reform.dev.services.TaskManagementService;
+import uk.gov.hmcts.reform.dev.services.TaskManagementServiceImpl;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,7 +17,7 @@ class TaskManagementControllerIntegrationTest {
     private final MockMvc mockMvc;
 
     @Mock
-    private TaskManagementService taskManagementService;
+    private TaskManagementServiceImpl taskManagementService;
 
     TaskManagementControllerIntegrationTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;

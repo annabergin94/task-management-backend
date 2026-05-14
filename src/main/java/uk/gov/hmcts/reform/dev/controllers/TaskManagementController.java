@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
 import uk.gov.hmcts.reform.dev.dtos.TaskResponseDTO;
-import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
+import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusDTO;
 import uk.gov.hmcts.reform.dev.services.TaskManagementService;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/tasks")
-@RequiredArgsConstructor
+@RequiredArgsConstructor // creates a constructor for all final fields
 @Tag(name = "Task CRUD Operations", description = "REST Endpoints for creating, retrieving, updating and deleting tasks, as well as updating the status of a task.")
 public class TaskManagementController {
 
@@ -43,7 +43,7 @@ public class TaskManagementController {
 
     @Operation(summary = "Update the status of a given task")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<TaskResponseDTO> updateTaskStatus(@PathVariable Long id, @Valid @RequestBody UpdatedTaskStatusRequestDTO taskStatusUpdate) {
+    public ResponseEntity<TaskResponseDTO> updateTaskStatus(@PathVariable Long id, @Valid @RequestBody UpdatedTaskStatusDTO taskStatusUpdate) {
         return ResponseEntity.ok(TaskResponseDTO.from(taskManagementService.updateTaskStatus(id, taskStatusUpdate)));
     }
 

@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
-import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
+import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusDTO;
 import uk.gov.hmcts.reform.dev.enums.TaskStatus;
 import uk.gov.hmcts.reform.dev.exceptions.TaskNotFoundException;
 import uk.gov.hmcts.reform.dev.models.Task;
@@ -29,7 +29,7 @@ class TaskManagementServiceTest {
     private TaskRepository taskRepository;
 
     @InjectMocks
-    private TaskManagementService taskManagementService;
+    private TaskManagementServiceImpl taskManagementService;
 
     private Task task;
 
@@ -81,7 +81,7 @@ class TaskManagementServiceTest {
 
     @Test
     void updateTaskStatus() {
-        UpdatedTaskStatusRequestDTO statusUpdate = new UpdatedTaskStatusRequestDTO(TaskStatus.COMPLETED);
+        UpdatedTaskStatusDTO statusUpdate = new UpdatedTaskStatusDTO(TaskStatus.COMPLETED);
         when(taskRepository.findById(MOCK_ID)).thenReturn(Optional.of(task));
         when(taskRepository.save(task)).thenReturn(task);
         Task result = taskManagementService.updateTaskStatus(MOCK_ID, statusUpdate);
@@ -92,7 +92,7 @@ class TaskManagementServiceTest {
 
     @Test
     void updateTaskStatusThrowsTaskNotFoundException() {
-        UpdatedTaskStatusRequestDTO statusUpdate = new UpdatedTaskStatusRequestDTO(TaskStatus.COMPLETED);
+        UpdatedTaskStatusDTO statusUpdate = new UpdatedTaskStatusDTO(TaskStatus.COMPLETED);
         when(taskRepository.findById(MOCK_ID)).thenReturn(Optional.empty());
         assertThrows(TaskNotFoundException.class, () -> taskManagementService.updateTaskStatus(MOCK_ID, statusUpdate));
         verify(taskRepository).findById(MOCK_ID);

@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.reform.dev.dtos.CreateTaskRequestDTO;
-import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusRequestDTO;
+import uk.gov.hmcts.reform.dev.dtos.UpdatedTaskStatusDTO;
 import uk.gov.hmcts.reform.dev.enums.TaskStatus;
 import uk.gov.hmcts.reform.dev.models.Task;
 import uk.gov.hmcts.reform.dev.services.TaskManagementService;
@@ -78,7 +78,7 @@ class TaskManagementControllerTest {
 
         mockMvc.perform(patch("/tasks/1/status")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(new UpdatedTaskStatusRequestDTO(TaskStatus.COMPLETED))))
+                            .content(objectMapper.writeValueAsString(new UpdatedTaskStatusDTO(TaskStatus.COMPLETED))))
             .andExpect(status().isOk());
         verify(taskManagementService).updateTaskStatus(eq(1L), any());
     }
